@@ -1,0 +1,339 @@
+
+<!-- saved from url=(0100)file:///C:/Users/adria/OneDrive/cs440/Lab7/Lab7/CS440%20P2_%20Adrianne%20Ng%20&%20Sandra%20Zhen.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title> CS440 P2: Adrianne Ng &amp; Sandra Zhen </title>
+<style>
+<!--
+body{
+font-family: 'Trebuchet MS', Verdana;
+}
+p{
+font-family: 'Trebuchet MS', Times;
+margin: 10px 10px 15px 20px;
+}
+h3{
+margin: 5px;
+}
+h2{
+margin: 10px;
+}
+h1{
+margin: 10px 0px 0px 20px;
+}
+div.main-body{
+align:center;
+margin: 30px;
+}
+hr{
+margin:20px 0px 20px 0px;
+}
+-->
+</style>
+</head>
+
+<body>
+<center>
+<a href="http://www.bu.edu/"><img border="0" src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/CS440%20Homework%20Template_%20HW[x]%20Student%20Name%20[xxx]_files/bu-logo.gif" width="119" height="120"></a>
+</center>
+
+<h1>Assignment Title</h1>
+<p> 
+ CS 440 Programming assignment 2 <br>
+ Adrianne Ng <br>
+ Sandra Zhen <br>
+    4/3/2019 
+</p>
+
+<div class="main-body">
+<hr>
+<h2> Problem Definition </h2>
+<p>
+We needed to write a program that can detect three distinct static gestures and one dynamic gesture. The result could be useful for us to determine better ways for robots and machines to recognize human commands remotely. The anticipated difficulties are learning to use openCV and coming up with the correct instructions to teach the computer how to detect the right gestures.
+</p>
+
+<hr>
+<h2> Method and Implementation </h2>
+<p>Our system captures the video stream from our camera and preprocesses the image using opencv Video Capture. It keeps track of the current frame. We then use skin detection to separate our skin colors from other colors and make it easier to find our hand. Then our bounding box function finds the largest contour in the image and returns the coordinates of the rectangle that would surround this contour. Then our count function find the number of fingers detected by the system by finding the center of the palm, which is noted to be the center of the segmented region, computing a circle which would represent the palm, and finding the number of contours above that circle. Finally our template matching function detects if there is a dynamic motion being made. Our system can identify four gestures: rock, paper, scissors and waving. The output is a box around a hand with an identified gesture.
+ </p>
+<p>
+Key methods:
+
+</p><li>def mySkinDetect(src): takes a colored image src and creates dst image (initialized to black by default). For each pixel src, if the pixel satisfies the requirements of skin color, mark the corresponding dst pixel in white. Returns dst.</li>
+
+<li>def boundingBox(curr): takes current frame, calls mySkinDetect to get binary image consisting of only skin colors in white, and finds contours in that image. Returns coordinates of the bounding box of the largest contour</li>
+
+<li>def count(curr, segmented): takes current frame and coordinates of the rectangle that encompasses the largest contour (segmented). Finds center of palm using the coordinates of segmented, computes a circle to represent the palm by taking 80% of the largest distance from the center to any side of segmented. Then counts the number of contours above that palm and returns the appropriate result based on that number (either rock, paper, scissors, or no gesture).</li>
+
+<li>def manualtemplatematch(curr): takes the motion energy of the current frame and compares it pixel by pixel to a binary template. If the number of pixels that match the template is above a certain threshold, it returns true. If not, it returns false</li> 
+
+
+
+<p></p>
+
+
+<hr>
+<h2>Experiments</h2>
+<p>
+We tested the program in different environments: the BU Computer Science Lab (EMA 302 and EMA 304) and our dorms. We did this in order to ensure that our skin detect works in different lighting, since most of our functions rely on mySkinDetect.</p>
+
+
+<p>
+We tracked our results our system by taking a certain number x of snapshots per gesture (the actual gesture) and noting down what gesture the system detected (the system-identified gesture). We noted whether or not our system correctly identified the gesture. We evaluated our system based on the accuracy for each gesture which was calculated by dividing the number of times that the system correctly identified the gesture by the number of times we tested it. [(the system-identified gesture) == (the actual gesture)]/x.
+</p>
+
+
+
+<hr>
+<h2> Results</h2>
+<p>
+List your experimental results.  Provide examples of input images and output
+images. If relevant, you may provide images showing any intermediate steps.  If
+your work involves videos, do not submit the videos but only links to them.
+</p>
+
+<p>
+
+<table>
+<tbody>
+<tr><td colspan="3"><center><h3>Qualitative</h3></center></td></tr>
+<tr>
+<td> Gesture </td><td> Success </td> <td> Failure</td> 
+</tr>
+<tr>
+  <td> Rock </td> 
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/rock_success_result.jpg"> 
+  <br>
+  Worked because of dark lighting and white clothing, both of which contrasts with skin color, so our skin detection was less flawed due to noise.
+  </td>
+  
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/rock_failed_result.jpg"> 
+  <br>
+  Did not work because my hand blended in with the background 
+  </td>
+</tr>
+ 
+<tr>
+  <td> Scissors </td> 
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/scissor_success_result.jpg"> 
+  <br>
+  Worked because of light clothing that contrasted with the color of my hand.
+  </td>
+  
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/scissor_failed_result.jpg"> 
+  <br>
+  Did not work because my hand blended in with my face so program picked up more contours than it should.
+  </td>
+  
+</tr>
+
+
+<tr>
+  <td> Paper </td> 
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/paper_success_result_2.png"> 
+  <br>
+  Many contours were detected due to noise but our requirement for paper were five or more contours so the noise likely did not influence result.
+  </td>
+  
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/paper_failed_result_2.jpg"> 
+  <br>
+  Did not work because skin detection segmented my hand due to angle and so less contours were detected than required
+  </td>
+</tr>
+
+<tr>
+  <td> No gesture </td>
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/no_gesture_success_2.png"> 
+  <br>
+  System picked up a number of contours that does not define the other gestures
+  </td>  
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/four_fingers_fail_identify_with_paper.png"> 
+  <br>
+  More contours were picked up due to lighting and skin blending with background so incorrectly identifed result as paper
+  </td>
+</tr>
+    
+
+<tr>
+  <td> Waving </td>
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/waving_success.png"> 
+  <br>
+  Gesture matched template.
+  </td>  
+  <td> <img src="file:///C:/Users/adria/OneDrive/cs440/report/report/results/waving_failed.png"> 
+  <br>
+  Detected waving as paper because it did not match the waving template.
+  </td>
+</tr>
+
+</tbody></table></p><h2>Confusion Matrix</h2><p>Prediction &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Ground Truth</p>
+
+<table style="width:100%">
+  <tbody><tr><th> </th>
+      
+      <th>   Rock</th>
+    <th>Scissors</th> 
+    <th>Paper</th>
+    <th>Wave</th>
+    <th>No Gesture</th>  
+  </tr>
+  <tr>
+    <td>Rock</td>
+    <td>5</td> 
+    <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>10</td>
+  </tr>
+  <tr>
+    <td>Scissors</td>
+    <td>2</td> 
+    <td>10</td>
+      <td>0</td>
+      <td>2</td>
+      <td>1</td>
+  </tr>
+  <tr>
+      <td>Paper</td>
+      <td>3</td>
+      <td>5</td>
+      <td>9</td>
+      <td>3</td>
+      <td>1</td>
+   </tr>
+   <tr>
+      <td>Wave</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4</td>
+      <td>13</td>
+      <td>0</td>
+    </tr>
+    <tr>
+        <td>No Gesture Detected</td>
+        <td>10</td>
+        <td>4</td>
+        <td>6</td>
+        <td>1</td>
+        <td>8</td>
+     </tr>
+
+</tbody></table>
+<p></p><p></p><table style="width:100%">
+  <tbody><tr><th> </th>
+      
+      <th>   Precision</th>
+    <th>Recall</th> 
+    <th>F1 Score</th>
+     
+  </tr>
+  <tr>
+    <td>Rock</td>
+    <td>.385</td> 
+    <td>.33</td>
+      <td>.355</td>
+     
+  </tr>
+  <tr>
+    <td>Scissors</td>
+    <td>2</td> 
+    <td>1</td>
+      <td>1.33</td>
+    
+  </tr>
+  <tr>
+      <td>Paper</td>
+      <td>.75</td>
+      <td>.81</td>
+      <td>.779</td>
+      
+   </tr>
+   <tr>
+      <td>Wave</td>
+      <td>3.25</td>
+      <td>1.86</td>
+      <td>2.37</td>
+
+    </tr>
+    <tr>
+        <td>No Gesture</td>
+        <td>.38</td>
+        <td>.67</td>
+        <td>.485</td>
+        
+     </tr>
+
+</tbody></table>
+<p></p>
+
+
+
+<hr>
+<h2> Discussion </h2>
+
+
+<p>
+There are many limitations to our methods. Firstly, our program relied heavily on our skin detection method to work. For instance, our bounding box method uses the resulting image from the skin detection method, and so the accuracy of the bounding box is dependent on that of skin detection. Our count method, which counts the number of fingers, also relied on our skin detection method to work. Our skin detection method, however, is not always accurate; sometimes only parts of the hand show up in white but we intended for the entire hand to show up in white. Because of this, our bounding box only draws a box around the largest part of the hand that does show up in white, and our count sometimes detects objects in the background, which appear as white in skin detection, as fingers. Also if there is no skin detected in the camera, the whole program will fail because it can’t take nothing as an input.
+
+</p>
+<p>
+The skin detection accuracy varied a lot with background so perhaps lighting, and noise impacted it. Furthermore camera settings might also have affected skin detection accuracy, since we had different cameras on both our laptops, and better results from skin detection occurred depending on camera. The skin detection thresholds might also need to have been adjusted to account for camera brightness or precision. As a result, the bounding box only bounds part of the hand (the part that shows up in white in the skin detection). We adjusted the thresholds of our skin detection, but we could not find a single threshold that works in all environments. 
+</p>
+
+<p>
+Another flaw with our program is that it relies on finger counting rather than template matching to detect gestures. Therefore if the incorrect fingers were held up, but the number of fingers still matches the result, then the system would detect a gesture even if there were none. For instance if the pointer finger and the pinkie were held up, the system would detect “scissors” even though the gesture is not scissors. Furthermore, our segmented hand was obtained by taking the largest contour. Hence a limitation to this approach would be if the hand was not the largest object in the frame.
+</p>
+
+<p>
+Our no gesture detection is inaccurate because the system only detects no gesture when there are 1, 3, or 4 contours while in reality it would be better if no gesture is detected when there are anything except 0, 2, and 5 contours. We put the case that if the system detected over 4 contours it would classify the gesture as paper because it seemed to work better for the three gestures we were aiming to detect.
+</p>
+
+<p>
+Our template matching for motion detection was also a limitation because we had to match the template exactly in order for motion detection to work. If we had a wave in a different portion of the screen than the template or angled it differently, the system would fail. Motion detection is difficult to do since it required precise movement in addition to background noise reduction. 
+</p>
+<p>
+The way we tested our program could also be improved. We did not test in the same environment the same number of times, and instead migrated from environment to environment and tested gestures a different number of times. We also angled our cameras differently at each environment, and the way we angle our camera would influence the background that we tested against. 
+</p>
+<p>
+Our results reflect the limitations of our methods. Firstly our results kept fluctuating due to noise. This could be because the largest contour detected by the system is not consistent and so whenever it picks up a larger contour (due to something having a similar color), it recognizes that as the region of interest instead and tries to identify fingers. In an environment with low lighting and monochrome background, our system seemed to be more accurate, especially for scissors.
+
+Because of the fluctuation in our results, the samples of results that we took were not very accurate either. 
+</p>
+<p>
+In the future, we would refine our skin detection method to make the thresholds dependent on environment so that it can correctly detect our skin regardless of lighting. 
+
+With more time to work on our project, we would implement background differencing as well in order to reduce the noise. We did attempt to do use background differencing to get our hand in the foreground and then apply template matching to it. However our attempts at background differencing did not yield accurate results, as it kept picking up objects that we intended to be in the background into the foreground. Another method we could try was to capture the image of the background before the hand shows up in the camera (initial frame) and then applying frame differencing between this initial frame and the current frame to capture objects in the foreground before applying skin detection. We would also refine our no gesture and other detections and attempt at template matching them. 
+
+Furthermore we would attempt to recognize more variations of gestures such as the peace sign. 
+
+We could apply our program to create robots that can obey hand commands instead of remote control commands. This could be useful in many fields such as game development.
+</p>
+<p></p>
+
+<hr>
+<h2> Conclusions </h2>
+
+<p>
+There are many factors to take into account when designing a system to recognize hand gestures. Each method we can use can come with their own difficulties. If we depend on color to find the hand, the system will also end up detecting our face or other skin colored objects. If we depend on shape to find our hand, it would be difficult to accurately pick up on different shapes if the boundaries between objects are not clearly defined. If we use templates to detect our hand, the system might find other objects that look similar to the template instead. So there is no one perfect way to create a system to do a human thing such as recognizing hand gestures. It would require many methods that rely on each other to create the most accurate program. 
+</p>
+
+
+<hr>
+<h2> Credits and Bibliography </h2>
+<p>
+Gogul Ilango. “Hand Gesture Recognition Using Python and OpenCV - Part 2.” Gogul Ilango, 25 Apr. 2017, gogul09.github.io/software/hand-gesture-recognition-p2. Accessed 2019 Apr 2.
+</p>
+<p>
+Mahaveerverma. “Mahaveerverma/Hand-Gesture-Recognition-Opencv.” GitHub, 2 July 2016, github.com/mahaveerverma/hand-gesture-recognition-opencv.
+<p></p>
+<p>“Python Tutorials.” OpenCV, opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html.</p></p>
+<p>
+Credit any joint work or discussions with your classmates. 
+</p>
+<hr>
+</div>
+
+
+
+
+
+</body></html>
